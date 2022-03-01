@@ -60,6 +60,33 @@ under the name `@external`.
 The setup and observations are each descibed in a comment in the `WORKSPACE`
 files of the `main_*` workspaces.
 
+## Why this is relevant
+
+We use overrides of workspaces in order to align the version of the same
+transitive dependencies of different external workspaces. We used to do this by
+loading the same workspaces at different versions after the execution of
+`*_deps()` functions from those workspaces. This worked, until we moved the
+loading of the external workspaces and their `*_deps()` files out of the
+`WORKSPACE` into separate `.bzl` files. When we did this, the overrides got
+silently dropped, because the overrides got inadvertently moved to after a
+`load()` statement, because we were not aware of the restriction and relied on
+the override documentation saying last import wins.
+
+## Bug report filed
+
+Turns out a [bug](https://github.com/bazelbuild/bazel/issues/4865) was filed
+years ago against bazel about the `git_repository()` rule, which behaves the
+same way.
+
+## Workaround
+
+It seems the solution is to always move the overrides before the `load()` call,
+not merely the invocation, of the `*_deps()` functions of external
+workspaces. This way, we would not even rely on the `*_deps()` function checking
+for the presence of the
+repository. ([Comment](https://github.com/bazelbuild/bazel/issues/4865#issuecomment-1055047211)
+on the bug above.)
+
 # Appendix
 
 ## Bazel error message
