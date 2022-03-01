@@ -1,0 +1,28 @@
+workspace(name = "main")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Case E: Three extern workspaces are imported under the same name, and there is
+# a load() statement at the top of the workspace. The repositories are imported
+# from tar balls with an http_archive() rule. The first workspace is imported
+# from the WORKSPACE file, the other two from a function in a .bzl file. The
+# file from which the other two workspaces are imported is loaded *after* the
+# first import.
+#
+# In this case, the overriding silently fails, and the first instance wins.
+
+http_archive(
+    name = "external",
+    url = "file:../external_1.tar",
+    strip_prefix = "external_1",
+)
+
+load("external.bzl", "external_1", "external_2", "external_3")
+
+http_archive(
+    name = "external",
+    url = "file:../external_2.tar",
+    strip_prefix = "external_2",
+)
+
+external_3()

@@ -1,0 +1,24 @@
+workspace(name = "main")
+
+load("external.bzl", "external")
+
+# Case G1: Three extern workspaces are imported under the same name, and there
+# is a load() statement at the top of the workspace. The repositories are
+# imported from tar balls with an http_archive() rule. The first and third
+# workspace is imported from a function from the main workspace, the second
+# workspace is imported from a function in the first workspace.
+#
+# In this case, the overriding does not work. Loading the second and third
+# workspace silently fails and the first workspace wins.
+
+load("external_1.bzl", "external_1")
+
+external_1()
+
+load("@external//:external_2.bzl", "external_2")
+
+external_2()
+
+load("external_3.bzl", "external_3")
+
+external_3()

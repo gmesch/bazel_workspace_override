@@ -1,0 +1,28 @@
+workspace(name = "main")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Case C: Three extern workspaces are imported under the same name, and there is
+# a load() statement at the top of the workspace. The repositories are imported
+# from tar balls with an http_archive() rule.
+#
+# In this case, the import works, there is NO ERROR, and the last one wins, just
+# as it's the case with local_repository() imports.
+
+http_archive(
+    name = "external",
+    url = "file:../external_1.tar",
+    strip_prefix = "external_1",
+)
+
+http_archive(
+    name = "external",
+    url = "file:../external_2.tar",
+    strip_prefix = "external_2",
+)
+
+http_archive(
+    name = "external",
+    url = "file:../external_3.tar",
+    strip_prefix = "external_3",
+)

@@ -1,0 +1,34 @@
+workspace(name = "main")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Case B: Three extern workspaces are imported under the same name, but there
+# is a load() statement at the top of the workspace.
+#
+# It is now an ERROR to redefine external workspace names, so any build in this
+# workspace fails at the place marked below.
+
+local_repository(
+    name = "extern",
+    path = "../extern_1",
+)
+
+# ERROR occurs here:
+#
+#   ERROR: Traceback (most recent call last):
+#	File "/Users/mesch/pro/bazel_workspace_override/main_B/WORKSPACE", line 14, column 17, in <toplevel>
+#		local_repository(
+#
+#   Error in local_repository: Cannot redefine repository after any load statement
+#   in the WORKSPACE file (for repository 'extern')
+#
+#   ERROR: error loading package 'external': Package 'external' contains errors
+local_repository(
+    name = "extern",
+    path = "../extern_2",
+)
+
+local_repository(
+    name = "extern",
+    path = "../extern_3",
+)

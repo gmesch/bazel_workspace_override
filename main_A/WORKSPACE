@@ -1,0 +1,19 @@
+workspace(name = "main")
+
+# Case A: Three extern workspaces are imported under the same name. The last one
+# takes precedence: `bazel build @extern//:note` builds the note from extern_3.
+
+local_repository(
+    name = "external",
+    path = "../external_1",
+)
+
+local_repository(
+    name = "external",
+    path = "../external_2",
+)
+
+local_repository(
+    name = "external",
+    path = "../external_3",
+)
